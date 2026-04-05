@@ -1,2 +1,5 @@
-# HW4AI
-This repo is for work related to ECE_510
+# ECE 410/510 Spring 2026
+
+**Name:** Pratibha Munnangi  
+**Course:** ECE 410/510 — Spring 2026  
+**Tentative Project Topic:** Profiling and optimization of quantum-classical hybrid ML models
