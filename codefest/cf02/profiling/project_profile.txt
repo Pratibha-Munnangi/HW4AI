@@ -1,0 +1,146 @@
+
+============================================================
+QKT Baseline - Project Profile Report
+ECE 410/510: Hardware for AI and ML, Spring 2026
+============================================================
+
+Platform
+--------
+  CPU    : Intel Core i5-1235U (12th Gen Alder Lake)
+  Cores  : 2 P-cores @ 4.4 GHz + 8 E-cores @ 3.3 GHz
+  Memory : LPDDR5-5200 dual-channel
+  OS     : Windows 11
+  NumPy  : 2.4.4
+  Dtype  : FP64 (float64)
+
+Kernel
+------
+  Operation : scores = Q @ K^T * scale
+  Name      : qkt_kernel() in qkt_baseline.py
+  This is the dominant kernel - QKT scales as O(T^2 * d_head)
+  and is the heaviest operation per attention layer.
+
+Config
+------
+  Batch size (B)      : 8
+  Sequence length (T) : 64
+  d_model (D)         : 64
+  n_heads (H)         : 4
+  d_head (D_HEAD)     : 16
+  Scale               : 1/sqrt(16) = 0.250000
+  Runs                : 10
+
+Per-Run Wall-Clock Timings
+---------------------------
+  Run  1:   888.50 us
+  Run  2:  1100.70 us
+  Run  3:  1105.00 us
+  Run  4:   999.20 us
+  Run  5:   981.90 us
+  Run  6:   960.10 us
+  Run  7:   982.30 us
+  Run  8:   923.80 us
+  Run  9:   964.80 us
+  Run 10:  1179.40 us
+
+Timing Summary
+--------------
+  Mean   : 1008.57 us
+  Std    : 86.21 us
+  Min    : 888.50 us
+  Max    : 1179.40 us
+
+cProfile Output (top 20 functions by cumulative time)
+------------------------------------------------------
+         22 function calls in 0.011 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    0.011    0.011 D:\PSU\HW4AI\Codefest\cf02\qkt_baseline.py:86(run_qkt_n_times)
+       10    0.010    0.001    0.010    0.001 D:\PSU\HW4AI\Codefest\cf02\qkt_baseline.py:68(qkt_kernel)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+       10    0.000    0.000    0.000    0.000 {method 'transpose' of 'numpy.ndarray' objects}
+
+
+
+
+Arithmetic Intensity (QKT Kernel)
+-----------------------------------
+  FLOPs formula : 2 x B x H x T^2 x d_head
+  Substituted   : 2 x 8 x 4 x 64^2 x 16
+  FLOPs total   : 4,194,304 (4.194 MFLOPs)
+
+  Bytes formula : (B x H x T x d_head x 8) x 2   [Q and K]
+                + (B x H x T x T x 8)             [scores]
+  Bytes Q       : 262,144 bytes
+  Bytes K       : 262,144 bytes
+  Bytes scores  : 1,048,576 bytes
+  Total bytes   : 1,572,864 bytes (1.573 MB)
+
+  AI            : 4,194,304 / 1,572,864
+                = 2.6667 FLOP/byte
+
+Software Baseline - Roofline Analysis (i5-1235U)
+-------------------------------------------------
+  P_peak       : 176.0 GFLOP/s (FP64, AVX2)
+  B_peak       : 76.8 GB/s (LPDDR5 dual-channel)
+  Ridge point  : 2.2917 FLOP/byte
+
+  AI = 2.6667 > Ridge = 2.2917
+  -> Kernel is COMPUTE-bound on i5-1235U
+
+  Attainable perf (SW) : min(176.0, 2.67 x 76.8)
+                       = 176.00 GFLOP/s
+  Measured perf        : 4.1587 GFLOP/s
+  HW utilization       : 2.4% of attainable ceiling
+
+Hypothetical HW Accelerator Design Point
+-----------------------------------------
+  Architecture : 16x16 systolic MAC array @ 500 MHz
+  P_hw         : 16 x 16 x 2 x 500 MHz = 256.0 GFLOP/s
+  B_hw         : 512.0 GB/s (on-chip SRAM, no DRAM bottleneck)
+  Ridge_hw     : 0.5000 FLOP/byte
+
+  AI = 2.6667 > Ridge_hw = 0.5000
+  -> Kernel is COMPUTE-bound on accelerator
+
+  Attainable perf (HW) : min(256.0, 2.67 x 512.0)
+                       = 256.00 GFLOP/s
+  Expected speedup     : 256.00 / 176.00 = 1.5x
+
+============================================================
+Dominant Kernel: qkt_kernel() - scores = Q @ K^T * scale
+  File   : qkt_baseline.py
+  Op     : matrix multiply (B,H,T,d_head) x (B,H,d_head,T)
+  Output : (B,H,T,T) attention score matrix
+  Why dominant: scales O(T^2) with sequence length,
+                heaviest op per attention layer
+============================================================
+
+============================================================
+DOMINANT KERNEL IDENTIFICATION
+============================================================
+
+From cProfile (10 runs), ranked by total time:
+
+  Rank 1 (DOMINANT): qkt_kernel()
+  ---------------------------------
+    ncalls     : 10
+    tottime    : 0.010 s  <- 91% of total runtime (0.011 s)
+    percall    : 0.001 s
+    location   : qkt_baseline.py:68
+
+  Rank 2: run_qkt_n_times() [wrapper, not a kernel]
+    tottime    : 0.001 s  (overhead only)
+
+  Rank 3: numpy.transpose()
+    tottime    : 0.000 s  (negligible)
+
+CONCLUSION:
+  qkt_kernel() - scores = Q @ K.transpose(0,1,3,2) * scale
+  is the dominant kernel, consuming 91% of total runtime.
+  All other operations are negligible by comparison.
+  This kernel is the target for hardware acceleration.
+
+============================================================
