@@ -1,0 +1,124 @@
+==PROF== Connected to process 4050 (/content/gemm_naive)
+==PROF== Profiling "gemm_naive": 0%....50%....100% - 31 passes
+=== gemm_naive (N=1024, FP32) ===
+block=16x16  grid=64x64  iters=20
+avg kernel time : 4.9890 ms
+achieved        : 430.44 GFLOP/s
+C[0]=0.013600  C[N*N-1]=-0.025300
+==PROF== Disconnected from process 4050
+[4050] gemm_naive@127.0.0.1
+  gemm_naive(const float *, const float *, float *, int) (64, 64, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 7.5
+    Section: GPU Speed Of Light Throughput
+    ----------------------- ----------- ------------
+    Metric Name             Metric Unit Metric Value
+    ----------------------- ----------- ------------
+    DRAM Frequency                  Ghz         5.00
+    SM Frequency                    Mhz       585.00
+    Elapsed Cycles                cycle    5,380,551
+    Memory Throughput                 %        62.45
+    DRAM Throughput                   %         7.29
+    Duration                         ms         9.20
+    L1/TEX Cache Throughput           %        93.69
+    L2 Cache Throughput               %         6.74
+    SM Active Cycles              cycle 5,344,626.12
+    Compute (SM) Throughput           %        62.45
+    ----------------------- ----------- ------------
+
+    INF   Compute and Memory are well-balanced: To reduce runtime, both computation and memory traffic must be reduced. 
+          Check both the Compute Workload Analysis and Memory Workload Analysis sections.                               
+
+    Section: GPU Speed Of Light Roofline Chart
+    INF   The ratio of peak float (fp32) to double (fp64) performance on this device is 32:1. The workload achieved 8%  
+          of this device's fp32 peak performance and 0% of its fp64 peak performance. See the Kernel Profiling Guide    
+          (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#roofline) for more details on roofline      
+          analysis.                                                                                                     
+
+    Section: PM Sampling
+    ------------------------- ----------- ------------
+    Metric Name               Metric Unit Metric Value
+    ------------------------- ----------- ------------
+    Maximum Buffer Size             Mbyte         3.15
+    Dropped Samples                sample            0
+    Maximum Sampling Interval       cycle       20,000
+    # Pass Groups                                    1
+    ------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.72
+    Executed Ipc Elapsed  inst/cycle         0.72
+    Issue Slots Busy               %        18.07
+    Issued Ipc Active     inst/cycle         0.72
+    SM Busy                        %        20.98
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 83.78%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ----------------- ----------- ------------
+    Metric Name       Metric Unit Metric Value
+    ----------------- ----------- ------------
+    Memory Throughput     Gbyte/s        23.30
+    Mem Busy                    %        46.85
+    Max Bandwidth               %        62.45
+    L1/TEX Hit Rate             %        87.38
+    L2 Hit Rate                 %        81.13
+    Mem Pipes Busy              %        62.45
+    ----------------- ----------- ------------
+
+    Section: Memory Workload Analysis Tables
+    OPT   Est. Speedup: 40.99%                                                                                          
+          The memory access pattern for global loads from L1TEX might not be optimal. On average, only 18.0 of the 32   
+          bytes transmitted per sector are utilized by each thread. This could possibly be caused by a stride between   
+          threads. Check the Source Counters section for uncoalesced global loads.                                      
+
+    Section: Scheduler Statistics
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    One or More Eligible                   %        18.06
+    Issued Warp Per Scheduler                        0.18
+    No Eligible                            %        81.94
+    Active Warps Per Scheduler          warp         7.89
+    Eligible Warps Per Scheduler        warp         0.74
+    ---------------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 37.55%                                                                                    
+          Every scheduler is capable of issuing one instruction per cycle, but for this workload each scheduler only    
+          issues an instruction every 5.5 cycles. This might leave hardware resources underutilized and may lead to     
+          less optimal performance. Out of the maximum of 8 warps per scheduler, this workload allocates an average of  
+          7.89 active warps per scheduler, but only an average of 0.74 warps were eligible per cycle. Eligible warps    
+          are the subset of active warps that are ready to issue their next instruction. Every cycle with no eligible   
+          warp results in no instruction being issued and the issue slot remains unused. To increase the number of      
+          eligible warps, avoid possible load imbalances due to highly different execution durations per warp.          
+          Reducing stalls indicated on the Warp State Statistics and Source Counters sections can help, too.            
+
+    Section: Warp State Statistics
+    ---------------------------------------- ----------- ------------
+    Metric Name                              Metric Unit Metric Value
+    ---------------------------------------- ----------- ------------
+    Warp Cycles Per Issued Instruction             cycle        43.68
+    Warp Cycles Per Executed Instruction           cycle        43.68
+    Avg. Active Threads Per Warp                                   32
+    Avg. Not Predicated Off Threads Per Warp                    31.96
+    ---------------------------------------- ----------- ------------
+
+    OPT   Est. Speedup: 37.55%                                                                                          
+          On average, each warp of this workload spends 35.3 cycles being stalled waiting for the L1 instruction queue  
+          for local and global (LG) memory operations to be not full. Typically, this stall occurs only when executing  
+          local or global memory instructions extremely frequently. Avoid redundant global memory accesses. Try to      
+          avoid using thread-local memory by checking if dynamically indexed arrays are declared in local scope, of if  
+          the kernel has excessive register pressure causing by spills. If applicable, consider combining multiple      
+          lower-width memory operations into fewer wider memory operations and try interleaving memory operations and   
+          math instructions. This stall type represents about 80.7% of the total average of 43.7 cycles between         
+          issuing two instructions.                                                                                     
+    ----- --------------------------------------------------------------------------------------------------------------
+    INF   Check the Warp Stall Sampling (All Samples) table for the top stall locations in your source based on         
+          sampling data. The Kernel Profiling Guide                                                                     
+          (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#metrics-reference) provides more details    
+          on each stall reason.                                                                                         
+
