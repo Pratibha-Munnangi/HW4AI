@@ -1,10 +1,6 @@
 """
 cocotb testbench STUB for core_pe.sv — cf04 COPT Part B #2.
 
-Per the handout: 'Create a cocotb testbench that instantiates your module,
-drives reset, and applies at least one representative input. Passing complex
-assertions is not required — the goal is a working simulation harness.'
-
 This is intentionally a harness, not a full verification suite. M2 will add:
   - randomized stimulus across the parameter range
   - co-simulation against a reference Python model
