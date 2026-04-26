@@ -1,0 +1,29 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/home/claude/proj_test'
+mkdir -p sim_build
+/usr/bin/iverilog -o sim_build/sim.vvp -s core_pe -g2012 -g2012 -f sim_build/cmds.f  /home/claude/proj_test/core_pe.sv
+rm -f results.xml
+COCOTB_TEST_MODULES=test_pe COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=core_pe TOPLEVEL_LANG=verilog \
+         /usr/bin/vvp -M /usr/local/lib/python3.12/dist-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build/sim.vvp   
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /usr/bin/python3
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1777244893
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /usr/local/lib/python3.12/dist-packages/cocotb
+     0.00ns INFO     cocotb.regression                  pytest not found, install it to enable better AssertionError messages
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_pe.test_pe_smoke (1/1)
+                                                            Smoke test: reset, one accumulation, confirm acc_out updated.
+     1.00ns INFO     cocotb.core_pe                     smoke: post-reset state OK (acc_out=0, a_out=0, b_out=0)
+    11.00ns INFO     cocotb.core_pe                     smoke: applied a=5 b=7 en=1 -> acc_out=35, a_out=5, b_out=7
+    11.00ns INFO     cocotb.core_pe                     smoke: harness OK — module instantiated, reset works, one input applied and observed at outputs
+    11.00ns INFO     cocotb.regression                  test_pe.test_pe_smoke passed
+    11.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                        ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************
+                                                        ** test_pe.test_pe_smoke          PASS          11.00           0.00       8526.58  **
+                                                        **************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                 11.00           0.00       3741.27  **
+                                                        **************************************************************************************
+make[1]: Leaving directory '/home/claude/proj_test'
