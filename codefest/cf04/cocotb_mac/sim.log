@@ -1,0 +1,40 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/home/claude/cocotb_mac'
+mkdir -p sim_build
+/usr/bin/iverilog -o sim_build/sim.vvp -s mac -g2012 -g2012 -f sim_build/cmds.f -s cocotb_iverilog_dump  /home/claude/cocotb_mac/mac_correct.v sim_build/cocotb_iverilog_dump.v
+/usr/local/lib/python3.12/dist-packages/cocotb_tools/makefiles/simulators/Makefile.icarus:66: Using MODULE is deprecated, please use COCOTB_TEST_MODULES instead.
+rm -f results.xml
+COCOTB_TEST_MODULES=test_mac COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=mac TOPLEVEL_LANG=verilog \
+         /usr/bin/vvp -M /usr/local/lib/python3.12/dist-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build/sim.vvp -fst  
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.12.4 interpreter at /usr/bin/python3
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1777240481
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /usr/local/lib/python3.12/dist-packages/cocotb
+     0.00ns INFO     cocotb.regression                  pytest not found, install it to enable better AssertionError messages
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_mac.test_mac_basic (1/2)
+                                                            Handout stimulus: a=3, b=4 for 3 cycles, then assert rst.
+FST info: dumpfile sim_build/mac.fst opened for output.
+    11.00ns INFO     cocotb.mac                         basic: a=3 b=4 -> out=12  (expected 12) OK
+    21.00ns INFO     cocotb.mac                         basic: a=3 b=4 -> out=24  (expected 24) OK
+    31.00ns INFO     cocotb.mac                         basic: a=3 b=4 -> out=36  (expected 36) OK
+    41.00ns INFO     cocotb.mac                         basic: rst -> out=0 OK
+    41.00ns INFO     cocotb.regression                  test_mac.test_mac_basic passed
+    41.00ns INFO     cocotb.regression                  running test_mac.test_mac_overflow (2/2)
+                                                            Drive the accumulator past 2**31 - 1 and document the behavior.
+    52.00ns INFO     cocotb.mac                         overflow: driving a=127 b=127 (product=16129) for 133144 cycles to approach MAX_INT32=2147483647
+1331492.00ns INFO     cocotb.mac                         overflow: pre-overflow out=2147479576 (expected 2147479576, gap to MAX_INT32 = 4071)
+1331502.00ns INFO     cocotb.mac                         overflow: pushed past boundary; out=-2147471591 (wrap would give -2147471591, saturate would give 2147483647)
+1331502.00ns INFO     cocotb.mac                         overflow: documented behavior = WRAP (two's complement)
+1331502.00ns INFO     cocotb.regression                  test_mac.test_mac_overflow passed
+1331502.00ns INFO     cocotb.regression                  **************************************************************************************
+                                                         ** TEST                          STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                         **************************************************************************************
+                                                         ** test_mac.test_mac_basic        PASS          41.00           0.00       9747.01  **
+                                                         ** test_mac.test_mac_overflow     PASS     1331461.00           6.65     200167.81  **
+                                                         **************************************************************************************
+                                                         ** TESTS=2 PASS=2 FAIL=0 SKIP=0            1331502.00           6.66     199974.65  **
+                                                         **************************************************************************************
+make[1]: Leaving directory '/home/claude/cocotb_mac'
