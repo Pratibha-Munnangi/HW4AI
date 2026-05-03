@@ -1,0 +1,24 @@
+VCD info: dumpfile sim/tb_interface.vcd opened for output.
+============================================================
+ tb_interface : AXI4-Lite + AXI4-Stream protocol checks
+============================================================
+
+--- Sub-test 1: AXI-Lite write + read CONFIG ---
+  [LITE_W] addr=8 data=00400010 bresp=00
+  [LITE_R] addr=8 data=00400010 rresp=00
+  [PASS] CONFIG readback : got=00400010 expected=00400010
+
+--- Sub-test 2: AXI-Lite read VERSION ---
+  [LITE_R] addr=c data=c0de0001 rresp=00
+  [PASS] VERSION readback : got=c0de0001 expected=c0de0001
+
+--- Sub-test 3: AXI-Stream beat passthrough ---
+  [PASS] Stream tdata out : got=0000cafe expected=0000cafe
+  [PASS] Stream tlast out : got=00000001 expected=00000001
+
+--- Summary ---
+  PASS : 4
+  FAIL : 0
+TEST PASSED
+============================================================
+tb/tb_interface.sv:183: $finish called at 186000 (1ps)
