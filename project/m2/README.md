@@ -1,7 +1,6 @@
 # Project M2 — QK^T Chiplet Accelerator
 
-This directory contains the M2 deliverables for the QK^T chiplet project
-(ECE 410/510, Spring 2026, Prof. Teuscher). Both required modules are present
+This directory contains the M2 deliverables for the QK^T chiplet project. Both required modules are present
 as synthesizable SystemVerilog with self-checking testbenches; both produce
 **TEST PASSED** in their committed transcripts.
 
