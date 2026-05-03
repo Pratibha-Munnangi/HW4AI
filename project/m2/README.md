@@ -1,236 +1,110 @@
-# Project M2 — QK^T Chiplet: Compute Core + Interface
+# Project M2 — QK^T Chiplet Accelerator
 
-This directory contains the M2 deliverables: synthesizable SystemVerilog for
-the compute core (16x16-ready FP16/FP32 systolic array, verified at 4x4) and
-the AXI4-Lite + AXI4-Stream interface module, with self-checking testbenches
-that produce **TEST PASSED** in their respective transcripts.
+This directory contains the M2 deliverables for the QK^T chiplet project
+(ECE 410/510, Spring 2026, Prof. Teuscher). Both required modules are present
+as synthesizable SystemVerilog with self-checking testbenches; both produce
+**TEST PASSED** in their committed transcripts.
 
-For the rubric checklist see `Project: Milestone 2 Deliverables and Checklist`
-(course handout, Apr 26 2026 r1). Every checklist item maps to a file under
-this directory tree.
+## ⚠️ Deviations from the rubric's suggested structure
 
-## Layout
+Two places where this submission deviates from the rubric handout's suggested
+filenames or layout. Both are flagged here so the grader can match expected
+paths to actual files at a glance.
 
-```
-project/m2/
-├── README.md                  (this file)
-├── precision.md               (numerical format choice + measured error sweep)
-├── gen_vectors.py             (Python reference vector generator)
-├── render_waveform.py         (optional: regenerate waveform.png from VCD)
-├── rtl/
-│   ├── fp16_multiplier.sv     (FP16*FP16 -> FP32, FTZ, no rounding)
-│   ├── fp32_adder.sv          (FP32 + FP32 -> FP32, FTZ + RNE)
-│   ├── core_pe.sv             (single PE: registered FP32 accumulator + forwarding)
-│   ├── compute_core.sv        (NxN systolic array, packed-bus ports)
-│   └── interface.sv           (AXI4-Lite slave + AXI4-Stream passthrough)
-├── tb/
-│   ├── tb_compute_core.sv     (loads .mem vectors, drives diagonal feed, checks PASS)
-│   └── tb_interface.sv        (AXI-Lite write+read + AXI-Stream beat, checks PASS)
-├── sim/
-│   ├── q_hex.mem, k_hex.mem, ref_hex.mem    (test vectors, generated)
-│   ├── vectors_meta.txt                     (human-readable Q/K/ref dump)
-│   ├── compute_core_run.log                 (PASS transcript, committed)
-│   ├── interface_run.log                    (PASS transcript, committed)
-│   ├── tb_compute_core.vcd                  (waveform dump)
-│   ├── tb_interface.vcd                     (waveform dump)
-│   └── waveform.png                         (annotated waveform image)
-└── sweep/
-    ├── gen_sweep.py                         (128-trial vector generator)
-    ├── tb_sweep.sv, tb_sweep_d16.sv         (sweep DUT drivers)
-    ├── analyze_sweep.py                     (compute MAE/max/ULP statistics)
-    ├── sim_sweep/                           (D=4 sweep outputs)
-    └── sim_sweep_d16/                       (D=16 sweep outputs)
-```
+### 1. Interface module is named `qkt_interface`, not `interface`
+
+| Rubric expectation                              | This submission                          |
+|-------------------------------------------------|------------------------------------------|
+| File: `project/m2/rtl/interface.sv`             | ✅ Same path                             |
+| Top module name: (implied) `interface`          | ❌ Module is named `qkt_interface`       |
+
+**Why:** SystemVerilog reserves the keyword `interface` for the SV interface
+construct. A module named `interface` does not compile in any
+SV-2012-compliant tool (Icarus, Verilator, ModelSim, VCS — all reject it).
+The rubric's filename-must-match-module-name rule is stated explicitly only
+for `compute_core.sv`; for `interface.sv` the rubric specifies the path but
+not the module name, so renaming the module is rubric-compliant.
+
+### 2. Compute core uses packed-bus ports instead of unpacked arrays
+
+| Rubric expectation                              | This submission                          |
+|-------------------------------------------------|------------------------------------------|
+| Filename: `project/m2/rtl/compute_core.sv`      | ✅ Same path                             |
+| Top module: `compute_core`                       | ✅ Same module name                      |
+| Port style: (unspecified)                        | Packed buses: `q_in_bus`, `k_in_bus`, `c_out_bus` |
+
+**Why:** Icarus Verilog 12 has a known limitation propagating unpacked-array
+output ports through `generate`-block instances; signals were stuck at X at
+the module boundary even though internal PE accumulators held correct values.
+Switching to packed buses (`logic [N*16-1:0]`, `logic [N*N*32-1:0]`)
+resolved this and is also more portable across synthesis tools generally,
+so it's a permanent design choice rather than a workaround.
+
+---
+
+## File inventory
+
+The committed repository contains exactly the following files under
+`project/m2/`. Everything below is required either by the rubric checklist or
+to support the optional `precision.md` analysis.
+
+### RTL (`project/m2/rtl/`)
+
+| # | File                  | Top module       | Purpose                                                |
+|---|-----------------------|------------------|--------------------------------------------------------|
+| 1 | `fp16_multiplier.sv`  | `fp16_multiplier`| IEEE 754 binary16 × binary16 → binary32 (combinational, FTZ, no rounding) |
+| 2 | `fp32_adder.sv`       | `fp32_adder`     | IEEE 754 binary32 + binary32 → binary32 (combinational, FTZ + RNE) |
+| 3 | `core_pe.sv`          | `core_pe`        | One PE: registered FP32 accumulator + FP16 forwarding to right/down neighbors |
+| 4 | `compute_core.sv`     | `compute_core`   | NxN systolic array of PEs (default N=4, scales to N=16). Top module of compute deliverable. |
+| 5 | `interface.sv`        | `qkt_interface`  | AXI4-Lite slave (4 CSRs) + AXI4-Stream skid buffer. Top module of interface deliverable. See deviation #1 above. |
+
+### Testbenches (`project/m2/tb/`)
+
+| # | File                   | Purpose                                          |
+|---|------------------------|--------------------------------------------------|
+| 6 | `tb_compute_core.sv`   | Loads vectors from `sim/q_hex.mem`, `sim/k_hex.mem`, `sim/ref_hex.mem` via `$readmemh`; drives diagonal-feed streaming; captures `c_out_bus`; compares against the FP32 reference within an FP-aware tolerance; prints PASS/FAIL per cell and overall. |
+| 7 | `tb_interface.sv`      | Drives one AXI-Lite write + readback (CONFIG), one AXI-Lite read (VERSION), and one AXI-Stream beat passthrough; checks expected values; prints PASS/FAIL. |
+
+### Simulation outputs (`project/m2/sim/`)
+
+| #  | File                       | Purpose                                            |
+|----|----------------------------|----------------------------------------------------|
+| 8  | `q_hex.mem`                | FP16 Q matrix vectors (hex), produced by `gen_vectors.py`. |
+| 9  | `k_hex.mem`                | FP16 K matrix vectors (hex), produced by `gen_vectors.py`. |
+| 10 | `ref_hex.mem`              | FP32 reference QKᵀ output (hex), produced by `gen_vectors.py`. |
+| 11 | `compute_core_run.log`     | Required: PASS transcript (16/16 cells bit-exact). |
+| 12 | `interface_run.log`        | Required: PASS transcript (4/4 sub-tests).         |
+| 13 | `waveform.png`             | Required: annotated waveform image.                |
+
+The three `.mem` files are committed for grader convenience — testbenches
+run directly from a clean clone with no Python pre-processing required. They
+are also fully regeneratable: see `gen_vectors.py` (top-level) and the
+"Reproducing M2 results" section below. The commit has the bit-identical
+output of running `python gen_vectors.py` with the default arguments
+(N=4, D=4, seed=410).
+
+### Top-level docs and scripts (`project/m2/`)
+
+| #  | File              | Purpose                                                   |
+|----|-------------------|-----------------------------------------------------------|
+| 14 | `README.md`       | This file: file inventory, run instructions, deviations.  |
+| 15 | `precision.md`    | Required: numerical format choice + measured error sweep. |
+| 16 | `gen_vectors.py`  | Python script that produces `sim/q_hex.mem`, `sim/k_hex.mem`, `sim/ref_hex.mem`. Independent FP32 reference (NumPy) — never derived from the DUT. |
 
 ## Toolchain
 
-- **Simulator:** Icarus Verilog 12.0 (`iverilog -V` should report `12.0` or
-  later). Earlier versions lack SystemVerilog 2012 support needed by this
-  design. On Windows, install via `choco install iverilog` or
-  `scoop install iverilog`. On Linux, `apt-get install iverilog` (Ubuntu 24+
-  ships 12.0).
-- **Waveform viewer (optional):** GTKWave 3.3+, distributed with Icarus.
-- **Python:** 3.10+ with `numpy`. For optional waveform PNG regeneration also
-  `vcdvcd` and `matplotlib`. Installed via:
-  ```
-  pip install numpy vcdvcd matplotlib
-  ```
+- **Simulator:** Icarus Verilog 12.0+ (SV-2012). On Windows install via
+  `choco install iverilog` or `scoop install iverilog`. On Linux install via
+  `apt-get install iverilog` (Ubuntu 24+ ships 12.0).
+- **Waveform viewer (optional):** GTKWave (bundled with Icarus).
+- **Python (optional):** 3.10+ with `numpy` (any 1.x or 2.x). Required only
+  if regenerating the `.mem` test vectors via `gen_vectors.py`. The
+  committed `.mem` files mean the testbenches run without Python.
 
-No proprietary tools (ModelSim/Questa/VCS) are required. The grader can
-reproduce all results from a clean clone with the commands below.
+No proprietary tools are required.
 
-## Reproducing the M2 results from a clean clone
+## Reproducing M2 results from a clean clone
 
 All commands assume the working directory is `project/m2/`.
 
-### 1. Generate test vectors (Python)
-
-```
-python gen_vectors.py
-```
-
-This writes `sim/q_hex.mem`, `sim/k_hex.mem`, `sim/ref_hex.mem`, and
-`sim/vectors_meta.txt`. Defaults are `N=4 D=4 seed=410 scale=0.5`. The seed
-is fixed, so re-running produces byte-identical output.
-
-### 2. Compile and run the compute-core testbench
-
-```
-iverilog -g2012 -o sim/tb_compute_core.vvp \
-    rtl/fp16_multiplier.sv \
-    rtl/fp32_adder.sv \
-    rtl/core_pe.sv \
-    rtl/compute_core.sv \
-    tb/tb_compute_core.sv
-
-vvp sim/tb_compute_core.vvp | tee sim/compute_core_run.log
-```
-
-The transcript ends with `TEST PASSED` and reports `PASS cells : 16 / 16`.
-Each of the 16 output cells matches the FP32 reference bit-exact at the M2
-verification dimension (N=4 D=4); see `precision.md` for the full sweep.
-
-### 3. Compile and run the interface testbench
-
-```
-iverilog -g2012 -o sim/tb_interface.vvp \
-    rtl/interface.sv \
-    tb/tb_interface.sv
-
-vvp sim/tb_interface.vvp | tee sim/interface_run.log
-```
-
-The transcript ends with `TEST PASSED` and reports `PASS : 4` covering:
-
-1. AXI-Lite write to CONFIG (0x08), read back, value match.
-2. AXI-Lite read of VERSION (0x0C), value matches `32'hC0DE_0001`.
-3. AXI-Stream beat passthrough: `tdata` zero-extended FP16 to FP32.
-4. AXI-Stream `tlast` correctly mirrored.
-
-### 4. (Optional) Regenerate the waveform PNG
-
-```
-pip install vcdvcd matplotlib
-python render_waveform.py
-```
-
-Or open `sim/tb_compute_core.vcd` directly in GTKWave and save a screenshot
-to `sim/waveform.png`.
-
-### 5. (Optional) Reproduce the precision sweep
-
-```
-cd sweep
-python gen_sweep.py
-python gen_sweep.py --D 16 --outdir sim_sweep_d16 --seed 411
-cd ..
-iverilog -g2012 -o sweep/tb_sweep.vvp \
-    rtl/fp16_multiplier.sv rtl/fp32_adder.sv rtl/core_pe.sv \
-    rtl/compute_core.sv sweep/tb_sweep.sv
-vvp sweep/tb_sweep.vvp
-iverilog -g2012 -o sweep/tb_sweep_d16.vvp \
-    rtl/fp16_multiplier.sv rtl/fp32_adder.sv rtl/core_pe.sv \
-    rtl/compute_core.sv sweep/tb_sweep_d16.sv
-vvp sweep/tb_sweep_d16.vvp
-cd sweep
-python analyze_sweep.py
-```
-
-Numbers in `precision.md` are reproduced exactly under fixed seeds.
-
-## Architecture summary
-
-### Compute core (`rtl/compute_core.sv`)
-
-`compute_core` is a parameterized N-by-N output-stationary systolic array
-computing `C = Q * K^T`, where Q is N-by-D, K is N-by-D, C is N-by-N FP32.
-Defaults: `N = 4`, `D = 4`. Same RTL retargets to `N = 16`, `D = 16` for M3.
-
-The array is built by `genvar` instantiation of `core_pe`. Each PE registers
-its FP32 accumulator and forwards its FP16 operands to the right and down
-neighbors with one-cycle skew. Q rows enter at the west edge; K rows enter
-at the north edge. The diagonal-feed streaming pattern is driven by the
-testbench (see comments in `tb_compute_core.sv` for the exact protocol).
-
-Module ports use packed buses (`q_in_bus`, `k_in_bus`, `c_out_bus`) rather
-than unpacked arrays, for portability across simulators and synthesis tools.
-
-After `2*(N-1) + (D-1) + 1` cycles from reset deassertion, `c_out_bus` holds
-the full QK^T result.
-
-Numerical policy: see `precision.md`. Single-clock domain. Synchronous
-active-high reset. Pure RTL, no behavioral constructs.
-
-### Interface (`rtl/interface.sv`, module `qkt_interface`)
-
-AXI4-Lite slave with a 16-byte register space:
-
-| Offset | Name    | Access | Description                                      |
-|--------|---------|--------|--------------------------------------------------|
-| 0x00   | CTRL    | W1S    | [0]=START (self-clear), [1]=ABORT (self-clear)   |
-| 0x04   | STATUS  | RO/W1C | [0]=BUSY (RO), [1]=DONE (W1C), [2]=ERR (W1C)     |
-| 0x08   | CONFIG  | RW     | [15:0]=N, [31:16]=D                              |
-| 0x0C   | VERSION | RO     | `32'hC0DE_0001`                                  |
-
-AXI4-Stream slave (`s_axis`, 16-bit FP16 in) and master (`m_axis`, 32-bit
-FP32 out) with a single-stage skid buffer that honors the
-TVALID/TREADY/TLAST contract on every channel. For M2 the Lite block drives
-a placeholder "BUSY for FIXED_BUSY_CYCLES then DONE" engine, exercising
-end-to-end protocol. The compute_core hookup is M3 work and is not yet
-wired in (see Deviations).
-
-Note on module name: SystemVerilog reserves the keyword `interface` for the
-SV interface construct. The module is therefore named `qkt_interface`; the
-file is named `interface.sv` to match the rubric's path requirement. The
-rubric's "top module name must match the filename" line is for
-`compute_core.sv` only.
-
-## Deviations from the M1 plan
-
-- **Precision.** M1 was authored with FP16 as the working assumption. M2
-  formalizes that as **FP16 multiply with FP32 accumulate**, with **FTZ on
-  subnormals** and **RNE on the FP32 add**. No NaN/Inf propagation. See
-  `precision.md` for the rationale and 2048-cell measured error sweep.
-- **Interface protocol.** M1 identified AXI4-Lite + AXI4-Stream as the
-  practical starting point. M2 implements both. The interface and compute
-  core are *not* wired together for M2 -- they are separately verified
-  modules per the rubric. Integration (a diagonal-skew adapter from
-  AXI-Stream beats to the array's edge protocol) is M3 work.
-- **Array size for M2 simulation.** M2 verifies the array at N=4, D=4. The
-  RTL is fully parameterized and retargets to N=16, D=16 for M3 by changing
-  the `compute_core` module parameters (and re-running `gen_vectors.py
-  --N 16 --D 16`). The precision sweep at D=16 (`sweep/sim_sweep_d16/`)
-  exercises this configuration as a forward-compatibility check.
-- **Module naming.** `qkt_interface` not `interface` (SV keyword conflict;
-  filename remains `interface.sv` per rubric). See note in the Architecture
-  section above.
-- **Unpacked-array ports replaced with packed buses.** The compute_core
-  module uses packed buses (`q_in_bus`, `k_in_bus`, `c_out_bus`) rather
-  than unpacked array ports. This was driven by an Icarus Verilog 12
-  limitation in propagating unpacked-array outputs through generate-block
-  instances. Packed buses are also more portable across synthesis tools
-  generally, so this is a permanent design choice rather than a
-  simulator-specific workaround.
-
-## Verification status
-
-| Deliverable                                | Status                  |
-|--------------------------------------------|-------------------------|
-| `rtl/compute_core.sv` synthesizable        | Yes (no behavioral)     |
-| `rtl/interface.sv` synthesizable           | Yes (no behavioral)     |
-| Single-clock-domain, sync reset            | Yes, both modules       |
-| `tb_compute_core.sv` PASS                  | Yes (16/16 cells)       |
-| `tb_interface.sv` PASS                     | Yes (4/4 sub-tests)     |
-| `compute_core_run.log` committed           | Yes                     |
-| `interface_run.log` committed              | Yes                     |
-| `waveform.png` committed                   | Yes (annotated)         |
-| `precision.md` >=300 words with sweep      | Yes (1234 words, 2048 cells) |
-
-## Where to look next
-
-- **Test vectors and reference values:** `sim/vectors_meta.txt` — human-readable
-  dump of Q, K, and the FP32 reference QK^T.
-- **Numerical policy and measured error:** `precision.md`.
-- **Module-level documentation:** the header comment of each `.sv` file.
-- **For the streaming protocol explanation:** the header comment in
-  `rtl/compute_core.sv` and the streaming loop in `tb/tb_compute_core.sv`.
+### Compute core (mandatory)
