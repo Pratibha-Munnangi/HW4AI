@@ -1,1 +1,24 @@
+{
+    "DESIGN_NAME": "compute_core",
+    "VERILOG_FILES": [
+        "dir::src/fp16_multiplier.sv",
+        "dir::src/fp32_adder.sv",
+        "dir::src/core_pe.sv",
+        "dir::src/compute_core.sv"
+    ],
 
+    "CLOCK_PORT": "clk",
+    "CLOCK_NET": "clk",
+    "CLOCK_PERIOD": 30.0,
+
+    "FP_CORE_UTIL": 35,
+    "PL_TARGET_DENSITY_PCT": 40,
+
+    "SYNTH_STRATEGY": "AREA 0",
+    "SYNTH_MAX_FANOUT": 6,
+
+    "RUN_LINTER": true,
+    "RUN_CVC": false,
+
+    "DESIGN_REPO": "ECE410 M3 QKT accelerator"
+}
