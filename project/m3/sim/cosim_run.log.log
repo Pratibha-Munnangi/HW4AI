@@ -1,0 +1,63 @@
+VCD info: dumpfile sim/cosim.vcd opened for output.
+[65000] Reset deasserted.
+[105000] VERSION read: 0xc0de0002 (expect 0xC0DE_0002)
+[185000] CONFIG read back: 0x00040004 (expect 0x0004_0004)
+[185000] Reference C computed (16 independent 4x4 tiles).
+[225000] START written.
+[545000] PROD: Tile (0,0) Q sent (row-band start)
+[865000] PROD: Tile (0,0) K sent
+[865000] PROD: Tile (0,1) Q REUSED (P0)
+[1345000] PROD: Tile (0,1) K sent
+[1345000] PROD: Tile (0,2) Q REUSED (P0)
+[1375000] CONS: Tile (0,0) recv done. mismatches=0 total=16
+[1835000] PROD: Tile (0,2) K sent
+[1835000] PROD: Tile (0,3) Q REUSED (P0)
+[1865000] CONS: Tile (0,1) recv done. mismatches=0 total=32
+[2325000] PROD: Tile (0,3) K sent
+[2355000] CONS: Tile (0,2) recv done. mismatches=0 total=48
+[2655000] PROD: Tile (1,0) Q sent (row-band start)
+[2845000] CONS: Tile (0,3) recv done. mismatches=0 total=64
+[2975000] PROD: Tile (1,0) K sent
+[2975000] PROD: Tile (1,1) Q REUSED (P0)
+[3455000] PROD: Tile (1,1) K sent
+[3455000] PROD: Tile (1,2) Q REUSED (P0)
+[3485000] CONS: Tile (1,0) recv done. mismatches=0 total=80
+[3945000] PROD: Tile (1,2) K sent
+[3945000] PROD: Tile (1,3) Q REUSED (P0)
+[3975000] CONS: Tile (1,1) recv done. mismatches=0 total=96
+[4435000] PROD: Tile (1,3) K sent
+[4465000] CONS: Tile (1,2) recv done. mismatches=0 total=112
+[4765000] PROD: Tile (2,0) Q sent (row-band start)
+[4955000] CONS: Tile (1,3) recv done. mismatches=0 total=128
+[5085000] PROD: Tile (2,0) K sent
+[5085000] PROD: Tile (2,1) Q REUSED (P0)
+[5565000] PROD: Tile (2,1) K sent
+[5565000] PROD: Tile (2,2) Q REUSED (P0)
+[5595000] CONS: Tile (2,0) recv done. mismatches=0 total=144
+[6055000] PROD: Tile (2,2) K sent
+[6055000] PROD: Tile (2,3) Q REUSED (P0)
+[6085000] CONS: Tile (2,1) recv done. mismatches=0 total=160
+[6545000] PROD: Tile (2,3) K sent
+[6575000] CONS: Tile (2,2) recv done. mismatches=0 total=176
+[6875000] PROD: Tile (3,0) Q sent (row-band start)
+[7065000] CONS: Tile (2,3) recv done. mismatches=0 total=192
+[7195000] PROD: Tile (3,0) K sent
+[7195000] PROD: Tile (3,1) Q REUSED (P0)
+[7675000] PROD: Tile (3,1) K sent
+[7675000] PROD: Tile (3,2) Q REUSED (P0)
+[7705000] CONS: Tile (3,0) recv done. mismatches=0 total=208
+[8165000] PROD: Tile (3,2) K sent
+[8165000] PROD: Tile (3,3) Q REUSED (P0)
+[8195000] CONS: Tile (3,1) recv done. mismatches=0 total=224
+[8655000] PROD: Tile (3,3) K sent
+[8655000] PROD: all 16 tiles sent
+[8685000] CONS: Tile (3,2) recv done. mismatches=0 total=240
+[9175000] CONS: Tile (3,3) recv done. mismatches=0 total=256
+[9175000] CONS: all 16 tiles received
+[9215000] STATUS=0x00000002, DONE bit     set after 1 polls.
+=========================================
+Total checks : 256
+Mismatches   : 0
+RESULT: PASS
+=========================================
+tb_top.sv:505: $finish called at 9255000 (1ps)
