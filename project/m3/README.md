@@ -179,7 +179,7 @@ openlane --to "Yosys.Synthesis" --run-tag synth_only config.json 2>&1 \
     | tee synth_only.log
 ```
 
-## Notes for the grader
+## Notes 
 
 - The interface module **is the only path** between host and compute in
   `tb_top.sv`. There are no `force` statements, no hierarchical
