@@ -1,7 +1,7 @@
 # Project Milestone 3 (M3) — Integration & Synthesis
 
 ECE 410/510, Spring 2026
-Ria — solo project, QK^T accelerator chiplet
+QK^T accelerator chiplet
 
 ## What is in this folder
 
