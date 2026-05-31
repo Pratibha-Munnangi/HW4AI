@@ -1,0 +1,16 @@
+platform,setting,method,workload_flops,runtime_value,runtime_unit,throughput_gflops,power_mw,energy_uj,speedup_vs_sw,notes
+m1_sw,i5-1235U NumPy FP64 (run 1),measured,4194304,888.50,us,4.720,28000,24878,1.104,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 2),measured,4194304,1100.70,us,3.811,28000,30820,0.892,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 3),measured,4194304,1105.00,us,3.796,28000,30940,0.888,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 4),measured,4194304,999.20,us,4.197,28000,27978,0.982,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 5),measured,4194304,981.90,us,4.272,28000,27493,0.999,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 6),measured,4194304,960.10,us,4.369,28000,26883,1.022,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 7),measured,4194304,982.30,us,4.270,28000,27504,0.999,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 8),measured,4194304,923.80,us,4.541,28000,25866,1.062,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 9),measured,4194304,964.80,us,4.347,28000,27014,1.017,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 (run 10),measured,4194304,1179.40,us,3.557,28000,33023,0.832,wall-clock perf_counter
+m1_sw,i5-1235U NumPy FP64 MEDIAN,measured,4194304,981.10,us,4.275,28000,27471,1.000,reference baseline (median of 10)
+v5_hw_single_inv,M3 V5 tb_top single invocation,measured_cycle_accurate,2048,9255,ns,0.221,162.2,1.50,0.0518,iverilog tb_top D=4 scope-reduced
+v5_hw_extrapolated,M3 V5 extrapolated to M1 workload,measured+linear_extrap,4194304,18.954,ms,0.221,162.2,3074,0.0518,2048 invocations x 9255 ns
+v5_projected_peak,M3 V5 synthesis peak (no util loss),projected,4194304,3.936,ms,1.067,162.2,638,0.2493,16 PE x 2 FLOPs x 33.3 MHz
+m4_projected_peak,M4 projected after P-top adder pipeline,projected,4194304,1.311,ms,3.200,200.0,262,0.7485,16 PE x 2 FLOPs x 100 MHz (est. power)
