@@ -124,10 +124,4 @@ See `benchmark_data.csv` for the underlying numbers, including all
 ten M1 software runs, the V5 tb_top transaction log timestamps, and
 the synthesis-derived projection inputs.
 
-## References
 
-- M1 SW baseline: `project/m1/sw_baseline.md` (re-confirmed for CF09)
-- V5 measured runtime: `project/m3/sim/tb_top.log`, runtime line 9,255 ns
-- V5 synthesis numbers: `project/m3/synth/synthesis_notes.md`
-- M3 power: `project/m3/synth/power_report.txt` (OpenSTA, 162.2 mW)
-- M4 target: `project/m3/synth/critical_path.md` (P-top, 100 MHz target)
