@@ -1,0 +1,31 @@
+{
+    "nl": "/mnt/d/PSU/HW4AI/Project/m4/V2/runs/RUN_2026-06-07_00-27-26/06-yosys-synthesis/top.nl.v",
+    "pnl": null,
+    "pnl-sdf-friendly": null,
+    "pnl-npc": null,
+    "def": null,
+    "lef": null,
+    "openroad-lef": null,
+    "odb": null,
+    "sdc": null,
+    "sdf": null,
+    "spef": null,
+    "lib": null,
+    "spice": null,
+    "mag": null,
+    "gds": null,
+    "mag_gds": null,
+    "klayout_gds": null,
+    "json_h": "/mnt/d/PSU/HW4AI/Project/m4/V2/runs/RUN_2026-06-07_00-27-26/05-yosys-jsonheader/top.h.json",
+    "vh": null,
+    "metrics": {
+        "design__lint_error__count": 0,
+        "design__lint_timing_construct__count": 0,
+        "design__lint_warning__count": 35,
+        "design__inferred_latch__count": 0,
+        "design__instance__count": 85545,
+        "design__instance__area": 927704.7424,
+        "design__instance_unmapped__count": 0,
+        "synthesis__check_error__count": 0
+    }
+}
