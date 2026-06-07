@@ -1,0 +1,7 @@
+[125000] VERSION read: 0xc0de0002 (expect 0xC0DE_0002)
+=========================================
+Total checks : 256
+Mismatches   : 0
+RESULT: PASS
+=========================================
+../tb/tb_top.sv:311: $finish called at 22545000 (1ps)
