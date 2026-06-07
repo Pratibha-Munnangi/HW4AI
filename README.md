@@ -22,8 +22,16 @@ for the 9-section design justification report.
 | Cell count / area | 85,545 cells / 928K µm² |
 | DRC / LVS | 0 violations / clean |
 | Simulation | PASS 256/256 (tb_top.sv, d_head=16) |
-| Throughput | 294 MFLOPS |
+| Throughput | 294 MFLOPS (14.5× slower than M1 SW, 4.9× more energy-efficient) |
 | Roofline position | Compute-bound at AI ≈ 3.5 FLOP/byte (ridge = 2.0) |
+
+## Graded Commit
+
+The graded submission is tagged `m4-submission`:
+
+```bash
+git show m4-submission --stat
+```
 
 ---
 
