@@ -3,41 +3,44 @@ wall_clock_median,M1_SW_NumPy,0.981,ms,time.perf_counter() 10-run median,project
 wall_clock_median,Naive_Python,151.0,ms,time.perf_counter() 3-run median,project/m4/bench/naive_qkt_baseline.py
 throughput,M1_SW_NumPy,4270,MFLOPS,FLOPs/wall_clock,project/m1/sw_baseline.md
 throughput,Naive_Python,27.6,MFLOPS,FLOPs/wall_clock,project/m4/bench/naive_qkt_baseline.py
-throughput,M3_V5,9.9,MFLOPS,sim_cycles x fmax (33 MHz) x 4 invocations for d_head=16,derived
-throughput,M4_v1,90.9,MFLOPS,sim_cycles x fmax (100 MHz) x 4 invocations for d_head=16,derived
-throughput,M4_v2_final,294,MFLOPS,sim_cycles x fmax (81 MHz) single invocation d_head=16,project/m4/sim/final_run.log
-sim_cycles_16tiles,M4_v2_final,2254,cycles,vvp tb_top.vvp output 22545000ps at 10ns clock,project/m4/sim/final_run.log
-cycles_per_tile,M4_v2_final,140.9,cycles,2254/16,derived
-fmax,M3_V5,33.3,MHz,OpenLane 2 post-PnR nom_tt WNS +9.06ns at 30ns,project/m3/synth/timing_report.txt
-fmax,M4_v1,100.0,MHz,WNS=-1.78ns at 8ns -> closes at ~10ns,project/m4/synth/timing_report.txt (M4v1 run)
-fmax,M4_v2_final,81.0,MHz,WNS=-4.36ns at 8ns -> closes at ~12.4ns,project/m4/synth/timing_report.txt
-wall_clock_hw,M3_V5,424.0,ms,8192 tiles x 4 invocations x 140.9 cycles x 30ns,derived
-wall_clock_hw,M4_v1,46.2,ms,8192 tiles x 4 invocations x 140.9 cycles x 10ns,derived
-wall_clock_hw,M4_v2_final,14.2,ms,8192 tiles x 140.9 cycles x 12.35ns (1/81MHz),derived
-speedup_vs_M1,M3_V5,0.00231,x,0.981ms / 424ms,derived
-speedup_vs_M1,M4_v1,0.0212,x,0.981ms / 46.2ms,derived
-speedup_vs_M1,M4_v2_final,0.0690,x,0.981ms / 14.2ms,derived
-speedup_vs_naive_python,M4_v2_final,10.6,x,151ms / 14.2ms,derived
-speedup_vs_M3,M4_v2_final,29.8,x,424ms / 14.2ms,derived
-power_total,M3_V5,177.24,mW,OpenLane 2 OpenSTA nom_tt,project/m3/synth/power_report.txt
-power_total,M4_v1,113.68,mW,OpenLane 2 OpenSTA nom_tt,project/m4/synth/power_report.txt (M4v1 run)
-power_total,M4_v2_final,211.85,mW,OpenLane 2 OpenSTA nom_tt,project/m4/synth/power_report.txt
-power_sequential,M4_v2_final,73.3,mW,OpenLane 2 OpenSTA nom_tt 34.6%,project/m4/synth/power_report.txt
-power_combinational,M4_v2_final,78.5,mW,OpenLane 2 OpenSTA nom_tt 37.1%,project/m4/synth/power_report.txt
-power_clock,M4_v2_final,60.0,mW,OpenLane 2 OpenSTA nom_tt 28.3%,project/m4/synth/power_report.txt
+throughput,M3_V5,9.9,MFLOPS,cycles/tile x fmax(33MHz) x 4 invocations for d_head=16,derived
+throughput,M4_v1,90.9,MFLOPS,cycles/tile x fmax(100MHz) x 4 invocations for d_head=16,derived
+throughput,M4_v2_final,294,MFLOPS,cycles/tile x fmax(81MHz) single invocation d_head=16,project/m4/sim/final_run.log
+sim_cycles_16tiles,M4_v2_final,2254,cycles,vvp tb_top.vvp: $finish at 22545000ps / 10ns clock period,project/m4/sim/final_run.log
+cycles_per_tile,M4_v2_final,140.9,cycles/tile,2254 cycles / 16 tiles,derived from final_run.log
+fmax,M3_V5,33.3,MHz,Post-PnR OpenLane 2: WNS +9.06ns at 30ns target -> design closes at 30ns,project/m3/synth/timing_report.txt
+fmax,M4_v1,100.0,MHz,DERIVED: WNS=-1.78ns at 8ns target -> min period=8+1.78=9.78ns -> 1/9.78ns=102MHz (rounded to 100MHz),project/m4/synth/timing_report.txt (M4v1 run)
+fmax,M4_v2_final,80.9,MHz,DERIVED: WNS=-4.36ns at 8ns target -> min period=8.0+4.36=12.36ns -> 1/12.36ns=80.9MHz,project/m4/synth/timing_report.txt
+fmax_derivation_note,M4_v2_final,N/A,N/A,81MHz is analytically derived from WNS. No separate re-synthesis at relaxed target was run. Standard industry method: achievable_fmax=1/(SDC_target+|WNS|),project/m4/synth/timing_report.txt
+wall_clock_hw,M3_V5,424.0,ms,8192 tiles x 4 invocations x 140.9 cycles/tile x (1/33.3MHz),derived
+wall_clock_hw,M4_v1,46.2,ms,8192 tiles x 4 invocations x 140.9 cycles/tile x (1/100MHz),derived
+wall_clock_hw,M4_v2_final,14.2,ms,8192 tiles x 140.9 cycles/tile x (1/80.9MHz) = 8192 x 1740ns,derived
+speedup_vs_M1,M3_V5,0.00231,x,M1_time/M3_time = 0.981ms/424ms,derived
+speedup_vs_M1,M4_v1,0.0212,x,M1_time/M4v1_time = 0.981ms/46.2ms,derived
+speedup_vs_M1,M4_v2_final,0.0690,x,M1_time/M4v2_time = 0.981ms/14.2ms = 0.069x (14.5x slower),derived
+speedup_vs_naive_python,M4_v2_final,10.6,x,naive_time/M4v2_time = 151ms/14.2ms,derived
+speedup_vs_M3,M4_v2_final,29.8,x,M3_time/M4v2_time = 424ms/14.2ms,derived
+power_total,M3_V5,177.24,mW,OpenLane 2 OpenSTA nom_tt_025C_1v80,project/m3/synth/power_report.txt
+power_total,M4_v2_final,211.85,mW,OpenLane 2 OpenSTA nom_tt_025C_1v80,project/m4/synth/power_report.txt
+power_sequential,M4_v2_final,73.3,mW,34.6% of total,project/m4/synth/power_report.txt
+power_combinational,M4_v2_final,78.5,mW,37.1% of total,project/m4/synth/power_report.txt
+power_clock,M4_v2_final,60.0,mW,28.3% of total,project/m4/synth/power_report.txt
 energy_per_call,M1_SW_NumPy,14.7,mJ,15W TDP x 0.981ms,derived
 energy_per_call,M4_v2_final,3.02,mJ,211.85mW x 14.2ms,derived
-energy_efficiency_vs_M1,M4_v2_final,4.9,x,14.7mJ / 3.02mJ,derived
-cell_count,M3_V5,33000,cells,Yosys synthesis stat,project/m3/synth/area_report.txt
+energy_efficiency_vs_M1,M4_v2_final,4.9,x,14.7mJ/3.02mJ,derived
 cell_count,M4_v2_final,85545,cells,Yosys state_out.json design__instance__count,project/m4/synth/area_report.txt
-cell_area,M3_V5,134000,um2,Yosys synthesis stat,project/m3/synth/area_report.txt
 cell_area,M4_v2_final,927705,um2,Yosys state_out.json design__instance__area,project/m4/synth/area_report.txt
-die_area,M4_v2_final,2250000,um2,1500x1500 floorplan,project/m4/synth/config.json
-wns_nom_tt,M4_v2_final,-4.36,ns,OpenLane 2 post-PnR OpenSTA,project/m4/synth/timing_report.txt
-arithmetic_intensity,M4_v2_with_P0,3.5,FLOP/byte,D_total=16 + Q-row P0 reuse (compute-bound),project/m4/bench/benchmark.md
-ridge_point,M4_v2_final,2.0,FLOP/byte,peak_compute/peak_bandwidth=2.59/1.30,derived
-peak_compute,M4_v2_final,2592,MFLOPS,16 PEs x 2 FLOP x 81 MHz,derived
-peak_bandwidth,M4_v2_final,1300,MB/s,16-bit AXI-Stream x 81 MHz,derived
-flops_per_call,M1_workload,4194304,FLOPs,2*B*H*T*T*d_head=2*8*4*64*64*16,derived
-DRC_violations,M4_v2_final,0,count,OpenLane 2 klayout DRC,project/m4/synth/openlane_run.log
-LVS_status,M4_v2_final,clean,pass/fail,OpenLane 2 magic LVS,project/m4/synth/openlane_run.log
+cell_area_sequential,M4_v2_final,307932,um2,33.19% of 927705 (from Yosys stat.rpt),project/m4/synth/area_report.txt
+dominant_cell_type,M4_v2_final,dfxtp_2,cell,14477 instances (16.9% of cells) - D flip-flops for pipeline registers,project/m4/synth/area_report.txt
+die_area,M4_v2_final,2250000,um2,1500x1500um floorplan,project/m4/synth/config.json
+wns_nom_tt,M4_v2_final,-4.36,ns,Worst Negative Slack at nom_tt_025C_1v80,project/m4/synth/timing_report.txt
+drc_violations,M4_v2_final,0,count,KLayout DRC - geometric design rule check,project/m4/synth/openlane_run.log
+lvs_status,M4_v2_final,clean,pass/fail,Layout vs Schematic,project/m4/synth/openlane_run.log
+antenna_pin_violations,M4_v2_final,80,count,OpenROAD.CheckAntennas - SEPARATE from DRC,project/m4/synth/openlane_run.log
+antenna_net_violations,M4_v2_final,62,count,OpenROAD.CheckAntennas - SEPARATE from DRC,project/m4/synth/openlane_run.log
+magic_drc,M4_v2_final,skipped,status,magic__drc_error__count not reported by OpenLane 2,project/m4/synth/openlane_run.log
+arithmetic_intensity,M4_v2_with_P0,3.5,FLOP/byte,D_total=16 + Q-row P0 reuse - compute-bound,project/m4/bench/benchmark.md
+ridge_point,M4_v2_final,2.0,FLOP/byte,2.59 GFLOPS / 1.30 GB/s,derived
+peak_compute,M4_v2_final,2592,MFLOPS,16 PEs x 2 FLOP x 80.9 MHz,derived
+peak_bandwidth,M4_v2_final,1294,MB/s,16-bit AXI-Stream x 80.9 MHz,derived
+flops_per_call,M1_workload,4194304,FLOPs,2*B*H*T*T*d_head = 2*8*4*64*64*16,derived
