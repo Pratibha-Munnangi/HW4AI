@@ -1,31 +1,205 @@
-{
-    "nl": "/mnt/d/PSU/HW4AI/Project/m4/V2/runs/RUN_2026-06-07_00-27-26/06-yosys-synthesis/top.nl.v",
-    "pnl": null,
-    "pnl-sdf-friendly": null,
-    "pnl-npc": null,
-    "def": null,
-    "lef": null,
-    "openroad-lef": null,
-    "odb": null,
-    "sdc": null,
-    "sdf": null,
-    "spef": null,
-    "lib": null,
-    "spice": null,
-    "mag": null,
-    "gds": null,
-    "mag_gds": null,
-    "klayout_gds": null,
-    "json_h": "/mnt/d/PSU/HW4AI/Project/m4/V2/runs/RUN_2026-06-07_00-27-26/05-yosys-jsonheader/top.h.json",
-    "vh": null,
-    "metrics": {
-        "design__lint_error__count": 0,
-        "design__lint_timing_construct__count": 0,
-        "design__lint_warning__count": 35,
-        "design__inferred_latch__count": 0,
-        "design__instance__count": 85545,
-        "design__instance__area": 927704.7424,
-        "design__instance_unmapped__count": 0,
-        "synthesis__check_error__count": 0
-    }
-}
+================================================================================
+M4 v2 Area Report — QKT Accelerator Chiplet
+Design: top | PDK: sky130_fd_sc_hd | Tool: Yosys + OpenLane 2
+Run: RUN_2026-06-07_00-27-26
+================================================================================
+
+SUMMARY
+-------
+Total cell instances : 85,545
+Chip area (module top): 927,704.74 µm²
+Sequential cell area  : 307,931.58 µm²  (33.19% of total)
+Combinational area    : 619,773.16 µm²  (66.81% of total)
+Die area              : 2,250,000 µm²   (1500×1500 µm)
+Core utilization      : ~41.2%          (cell area / die area)
+
+================================================================================
+CELL-TYPE BREAKDOWN (sky130_fd_sc_hd standard cells)
+================================================================================
+
+--- SEQUENTIAL (dominant area contributor) ---
+sky130_fd_sc_hd__dfxtp_2    14,477    D flip-flop (pipeline + state registers)
+
+  Breakdown of the 14,477 DFFs by architectural source:
+  - 3-stage pipelined FP32 adder × 16 PEs:
+      Each adder stage has ~270 pipeline registers
+      16 adders × ~270 = ~4,320 DFFs (adder pipeline)
+  - D-chain state per PE × 16 PEs:
+      tile_acc (32 bits) + block control (4 bits) = ~36 bits × 16 = ~576 DFFs
+  - Product buffer (4 × 32 bits × 16 PEs) = ~2,048 DFFs
+  - Interface/FSM/counter state = remaining ~7,533 DFFs
+  DOMINANT CONTRIBUTOR: DFFs account for 33.19% of total chip area.
+
+--- BUFFERS (clock tree + routing) ---
+sky130_fd_sc_hd__buf_1      11,588
+sky130_fd_sc_hd__buf_2         131
+sky130_fd_sc_hd__buf_4          13
+sky130_fd_sc_hd__buf_6          16
+sky130_fd_sc_hd__buf_8           1
+  SUBTOTAL buffers:          11,749
+
+--- MULTIPLEXERS (datapath muxes in adder and PE control) ---
+sky130_fd_sc_hd__mux2_1          4
+sky130_fd_sc_hd__mux2_2     10,138
+sky130_fd_sc_hd__mux2_4          1
+sky130_fd_sc_hd__mux4_2      2,026
+  SUBTOTAL muxes:            12,169
+
+--- XOR / XNOR (FP32 adder mantissa arithmetic) ---
+sky130_fd_sc_hd__xnor2_2     1,905
+sky130_fd_sc_hd__xnor2_4         1
+sky130_fd_sc_hd__xor2_2        930
+  SUBTOTAL XOR/XNOR:          2,836
+
+--- OR GATES ---
+sky130_fd_sc_hd__or2_2       5,702
+sky130_fd_sc_hd__or2_4           5
+sky130_fd_sc_hd__or2b_2        473
+sky130_fd_sc_hd__or3_2         802
+sky130_fd_sc_hd__or3_4          14
+sky130_fd_sc_hd__or3b_2        246
+sky130_fd_sc_hd__or3b_4          2
+sky130_fd_sc_hd__or4_2         245
+sky130_fd_sc_hd__or4_4          40
+sky130_fd_sc_hd__or4b_2         78
+sky130_fd_sc_hd__or4b_4         16
+sky130_fd_sc_hd__or4bb_2        25
+  SUBTOTAL OR:                7,648
+
+--- NOR GATES ---
+sky130_fd_sc_hd__nor2_2      5,215
+sky130_fd_sc_hd__nor2_4          7
+sky130_fd_sc_hd__nor2b_2        38
+sky130_fd_sc_hd__nor3_2        262
+sky130_fd_sc_hd__nor3_4          1
+sky130_fd_sc_hd__nor3b_2        14
+sky130_fd_sc_hd__nor4_2         48
+sky130_fd_sc_hd__nor4_4          1
+sky130_fd_sc_hd__nor4b_2        30
+sky130_fd_sc_hd__nor4bb_2        1
+  SUBTOTAL NOR:               5,617
+
+--- AND GATES ---
+sky130_fd_sc_hd__and2_2      2,302
+sky130_fd_sc_hd__and2_4          8
+sky130_fd_sc_hd__and2b_2       427
+sky130_fd_sc_hd__and3_2      2,589
+sky130_fd_sc_hd__and3_4          2
+sky130_fd_sc_hd__and3b_2       243
+sky130_fd_sc_hd__and4_2        435
+sky130_fd_sc_hd__and4_4          7
+sky130_fd_sc_hd__and4b_2        84
+sky130_fd_sc_hd__and4bb_2      164
+  SUBTOTAL AND:               6,261
+
+--- NAND GATES ---
+sky130_fd_sc_hd__nand2_2     3,202
+sky130_fd_sc_hd__nand2b_2       52
+sky130_fd_sc_hd__nand3_2       274
+sky130_fd_sc_hd__nand3b_2       10
+sky130_fd_sc_hd__nand4_2        56
+sky130_fd_sc_hd__nand4b_2        3
+sky130_fd_sc_hd__nand4bb_2       4
+  SUBTOTAL NAND:              3,601
+
+--- INVERTERS ---
+sky130_fd_sc_hd__inv_2       1,576
+sky130_fd_sc_hd__inv_4           3
+sky130_fd_sc_hd__inv_6           2
+  SUBTOTAL INV:               1,581
+
+--- COMPLEX AOI/OAI GATES (FP32 adder exponent compare + normalize logic) ---
+sky130_fd_sc_hd__a2111o_2       62
+sky130_fd_sc_hd__a2111oi_2      11
+sky130_fd_sc_hd__a211o_2       503
+sky130_fd_sc_hd__a211oi_2      220
+sky130_fd_sc_hd__a21bo_2       157
+sky130_fd_sc_hd__a21boi_2       58
+sky130_fd_sc_hd__a21o_2      1,118
+sky130_fd_sc_hd__a21o_4          5
+sky130_fd_sc_hd__a21oi_2     1,306
+sky130_fd_sc_hd__a21oi_4         8
+sky130_fd_sc_hd__a221o_2       895
+sky130_fd_sc_hd__a221oi_2      689
+sky130_fd_sc_hd__a22o_2      4,084
+sky130_fd_sc_hd__a22oi_2       293
+sky130_fd_sc_hd__a2bb2o_2      217
+sky130_fd_sc_hd__a2bb2oi_2       5
+sky130_fd_sc_hd__a311o_2        65
+sky130_fd_sc_hd__a311oi_2        7
+sky130_fd_sc_hd__a31o_2        583
+sky130_fd_sc_hd__a31oi_2        51
+sky130_fd_sc_hd__a32o_2        172
+sky130_fd_sc_hd__a32oi_2        14
+sky130_fd_sc_hd__a41o_2         85
+sky130_fd_sc_hd__o2111a_2       34
+sky130_fd_sc_hd__o2111ai_2      13
+sky130_fd_sc_hd__o211a_2     4,285
+sky130_fd_sc_hd__o211ai_2       70
+sky130_fd_sc_hd__o21a_2      1,061
+sky130_fd_sc_hd__o21a_4          1
+sky130_fd_sc_hd__o21ai_2       908
+sky130_fd_sc_hd__o21ba_2       175
+sky130_fd_sc_hd__o21bai_2       98
+sky130_fd_sc_hd__o221a_2       520
+sky130_fd_sc_hd__o221ai_2       19
+sky130_fd_sc_hd__o22a_2        696
+sky130_fd_sc_hd__o22ai_2        95
+sky130_fd_sc_hd__o2bb2a_2      377
+sky130_fd_sc_hd__o311a_2       120
+sky130_fd_sc_hd__o311ai_2        5
+sky130_fd_sc_hd__o31a_2        253
+sky130_fd_sc_hd__o31a_4          3
+sky130_fd_sc_hd__o31ai_2        42
+sky130_fd_sc_hd__o32a_2        174
+sky130_fd_sc_hd__o32ai_2         6
+sky130_fd_sc_hd__o41a_2         34
+sky130_fd_sc_hd__o41a_4          2
+sky130_fd_sc_hd__o41ai_2         3
+  SUBTOTAL complex AOI/OAI:  19,364
+
+--- MISC ---
+sky130_fd_sc_hd__conb_1          4    (tie cells)
+
+================================================================================
+FUNCTIONAL GROUP SUMMARY
+================================================================================
+
+Group                    | Cell count | % of total | Notes
+-------------------------|------------|------------|--------------------------------
+D flip-flops (dfxtp)     |     14,477 |     16.9%  | DOMINANT — pipeline + d-chain
+Multiplexers (mux2/mux4) |     12,169 |     14.2%  | Datapath muxes
+Buffers (buf)            |     11,749 |     13.7%  | Clock tree + routing
+Complex AOI/OAI          |     19,364 |     22.6%  | FP32 adder exponent/normalize
+OR gates                 |      7,648 |      8.9%  |
+NOR gates                |      5,617 |      6.6%  |
+AND gates                |      6,261 |      7.3%  |
+NAND gates               |      3,601 |      4.2%  |
+XOR/XNOR                 |      2,836 |      3.3%  | FP32 adder mantissa XOR
+Inverters                |      1,581 |      1.8%  |
+Misc (tie cells)         |          4 |      0.0%  |
+TOTAL                    |     85,545 |    100.0%  |
+
+================================================================================
+DOMINANT AREA CONTRIBUTOR ANALYSIS
+================================================================================
+
+The dominant area contributor is the 16 pipelined FP32 adder instances
+(fp32_adder_pipelined.sv), each instantiated once per PE in compute_core.sv.
+
+Each pipelined adder has 3 pipeline stages with ~90 bits of registered
+state per stage = ~270 pipeline flops per adder. With 16 adders:
+  16 × ~270 = ~4,320 pipeline DFFs
+
+Additionally, d-chaining added ~36 bits of persistent state per PE:
+  16 × 36 = ~576 DFFs for tile_acc + block control
+
+The product buffers (4 × 32 bits × 16 PEs) contribute ~2,048 DFFs.
+
+Combined: the 16 pipelined FP32 adder instances account for the majority
+of the 14,477 DFF instances, which at 33.19% sequential area fraction
+are the single largest area contributor to the 927,704 µm² total cell area.
+
+Source: Yosys synthesis stat report (pre-PnR)
+        RUN_2026-06-07_00-27-26/06-yosys-synthesis/reports/stat.rpt
+================================================================================
